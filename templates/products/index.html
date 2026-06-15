@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import render_pagination %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Data Produk</h1>
+  <a href="{{ url_for('products.add') }}" class="btn btn-primary">+ Tambah Produk</a>
+</div>
+
+<p class="text-muted mb-2" style="font-size:0.875rem;">
+  Kelola katalog produk — nama, SKU, harga, dan kategori. Stok diatur lewat menu Persediaan.
+</p>
+
+<div class="chips mb-2">
+  <a href="{{ url_for('products.index', q=search) }}" class="chip {% if not active_category %}active{% endif %}">Semua</a>
+  {% for cat in categories %}
+  <a href="{{ url_for('products.index', category=cat.id, q=search) }}" class="chip {% if active_category == cat.id %}active{% endif %}">{{ cat.name }}</a>
+  {% endfor %}
+</div>
+
+<form method="get" class="mb-2">
+  {% if active_category %}<input type="hidden" name="category" value="{{ active_category }}">{% endif %}
+  <div class="topbar-search" style="max-width:100%;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="search" name="q" value="{{ search }}" placeholder="Cari produk, SKU...">
+  </div>
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Produk</th>
+          <th>Kategori</th>
+          <th>SKU</th>
+          <th>Satuan</th>
+          <th>Harga Jual</th>
+          <th>Harga Modal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+        <tr>
+          <td>{{ product.name }}</td>
+          <td>{{ product.category.name }}</td>
+          <td>{{ product.sku }}</td>
+          <td>{{ product.unit }}</td>
+          <td>{{ product.price | rupiah }}</td>
+          <td>{{ product.cost | rupiah }}</td>
+          <td>
+            <a href="{{ url_for('products.edit', product_id=product.id) }}" class="btn btn-sm btn-secondary">Ubah</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-muted">Belum ada produk.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-list">
+    {% for product in products %}
+    <div class="product-card-mobile">
+      <div class="thumb">📦</div>
+      <div style="flex:1;">
+        <div style="font-weight:600;">{{ product.name }}</div>
+        <div class="text-muted" style="font-size:0.875rem;">{{ product.category.name }} · {{ product.sku }}</div>
+        <div style="margin-top:0.25rem;">{{ product.price | rupiah }}</div>
+      </div>
+      <a href="{{ url_for('products.edit', product_id=product.id) }}" class="btn btn-sm btn-secondary">Ubah</a>
+    </div>
+    {% else %}
+    <div class="empty-state">Belum ada produk.</div>
+    {% endfor %}
+  </div>
+</div>
+
+{{ render_pagination(pagination, 'products.index') }}
+{% endblock %}

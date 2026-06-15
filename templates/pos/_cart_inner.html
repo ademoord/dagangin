@@ -1,0 +1,58 @@
+{% if cart_items %}
+<div class="cart-panel hidden-mobile">
+  <div class="cart-panel-header">Keranjang ({{ cart_count }})</div>
+  <div class="cart-items">
+    {% for item in cart_items %}
+    <div class="cart-line">
+      <div class="cart-line-info">
+        <div class="cart-line-name">{{ item.product.name }}</div>
+        <div class="cart-line-price">{{ item.product.price | rupiah }}</div>
+      </div>
+      <div class="qty-control">
+        <button hx-post="{{ url_for('pos.cart_update', product_id=item.product.id) }}"
+                hx-target="#cart-root" hx-swap="innerHTML"
+                hx-vals='{"quantity": {{ item.quantity - 1 }}}' hx-include="[name=discount]">−</button>
+        <span>{{ item.quantity }}</span>
+        <button hx-post="{{ url_for('pos.cart_update', product_id=item.product.id) }}"
+                hx-target="#cart-root" hx-swap="innerHTML"
+                hx-vals='{"quantity": {{ item.quantity + 1 }}}' hx-include="[name=discount]">+</button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="cart-summary">
+    <div class="form-group">
+      <label for="discount">Diskon (Rp)</label>
+      <input class="form-control" type="number" name="discount" id="discount" min="0" value="{{ cart_discount | int }}">
+    </div>
+    <div class="form-group">
+      <label for="notes">Catatan</label>
+      <input class="form-control" name="notes" id="notes" placeholder="Opsional">
+    </div>
+    <div class="cart-row"><span>Subtotal</span><span>{{ cart_subtotal | rupiah }}</span></div>
+    <div class="cart-row total"><span>Total</span><span>{{ cart_total | rupiah }}</span></div>
+    <form method="post" action="{{ url_for('pos.checkout') }}" class="mt-2">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="discount" value="{{ cart_discount | int }}">
+      <input type="hidden" name="notes" id="checkout-notes" value="">
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="pay-btn">Bayar (F9)</button>
+    </form>
+  </div>
+</div>
+
+<div class="cart-mobile-bar hidden-desktop">
+  <div class="cart-info">Keranjang ({{ cart_count }}) · {{ cart_total | rupiah }}</div>
+  <form method="post" action="{{ url_for('pos.checkout') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="discount" value="{{ cart_discount | int }}">
+    <button type="submit" class="btn btn-primary">Bayar</button>
+  </form>
+</div>
+{% else %}
+<div class="cart-panel hidden-mobile">
+  <div class="cart-panel-header">Keranjang</div>
+  <div class="empty-state" style="padding:2rem 1rem;">
+    <p>Belum ada item</p>
+  </div>
+</div>
+{% endif %}

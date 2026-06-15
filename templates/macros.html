@@ -1,0 +1,43 @@
+{% macro status_badge(label, variant) %}
+<span class="badge badge-{{ variant }}">{{ label }}</span>
+{% endmacro %}
+
+{% macro rupiah(amount) %}
+{{ amount | rupiah }}
+{% endmacro %}
+
+{% macro flash_messages() %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flash-messages">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ 'error' if category == 'error' else category }}">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+{% endmacro %}
+
+{% macro render_pagination(pagination_obj, endpoint) %}
+{% if pagination_obj.pages > 1 %}
+<nav class="pagination">
+  {% if pagination_obj.has_prev %}
+  <a href="{{ url_for(endpoint, page=pagination_obj.prev_num, **request.args) }}">&laquo;</a>
+  {% endif %}
+  {% for p in pagination_obj.iter_pages() %}
+    {% if p %}
+      {% if p == pagination_obj.page %}
+      <span class="active">{{ p }}</span>
+      {% else %}
+      <a href="{{ url_for(endpoint, page=p, **request.args) }}">{{ p }}</a>
+      {% endif %}
+    {% else %}
+    <span>...</span>
+    {% endif %}
+  {% endfor %}
+  {% if pagination_obj.has_next %}
+  <a href="{{ url_for(endpoint, page=pagination_obj.next_num, **request.args) }}">&raquo;</a>
+  {% endif %}
+</nav>
+{% endif %}
+{% endmacro %}

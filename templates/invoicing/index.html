@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import status_badge, render_pagination %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Daftar Faktur</h1>
+  <a href="{{ url_for('invoicing.add') }}" class="btn btn-primary">+ Buat Faktur</a>
+</div>
+
+<div class="invoice-layout">
+  <div class="card">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>No. Faktur</th>
+            <th>Pelanggan</th>
+            <th>Tanggal</th>
+            <th>Jatuh Tempo</th>
+            <th>Total</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in invoices %}
+          <tr hx-get="{{ url_for('invoicing.preview', invoice_id=row.invoice.id) }}"
+              hx-target="#invoice-preview"
+              hx-swap="innerHTML"
+              style="cursor:pointer;{% if selected and selected.id == row.invoice.id %}background:var(--color-primary-light);{% endif %}">
+            <td>{{ row.invoice.invoice_number }}</td>
+            <td>{{ row.invoice.partner.name }}</td>
+            <td>{{ row.invoice.issue_date.strftime('%d/%m/%Y') if row.invoice.issue_date else '-' }}</td>
+            <td>{{ row.invoice.due_date.strftime('%d/%m/%Y') if row.invoice.due_date else '-' }}</td>
+            <td>{{ row.invoice.total | rupiah }}</td>
+            <td>{{ status_badge(row.status_label, row.status_variant) }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-muted">Belum ada faktur.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card-list">
+      {% for row in invoices %}
+      <div class="product-card-mobile">
+        <a href="{{ url_for('invoicing.index', selected=row.invoice.id) }}" style="flex:1;color:inherit;text-decoration:none;">
+          <div style="font-weight:600;">{{ row.invoice.invoice_number }}</div>
+          <div class="text-muted">{{ row.invoice.partner.name }}</div>
+          <div style="margin-top:0.25rem;">{{ row.invoice.total | rupiah }}</div>
+        </a>
+        {{ status_badge(row.status_label, row.status_variant) }}
+        <a href="{{ url_for('invoicing.download_pdf', invoice_id=row.invoice.id) }}" class="btn btn-sm btn-secondary" title="Unduh PDF">PDF</a>
+      </div>
+      {% endfor %}
+    </div>
+
+    {{ render_pagination(pagination, 'invoicing.index') }}
+  </div>
+
+  <div class="invoice-preview-panel hidden-mobile" id="invoice-preview">
+    {% include 'invoicing/_preview.html' %}
+  </div>
+</div>
+{% endblock %}

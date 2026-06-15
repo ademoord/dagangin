@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">{{ title }}</h1>
+  <a href="{{ url_for('products.index') }}" class="btn btn-secondary">Kembali</a>
+</div>
+
+<div class="card card-body" style="max-width:640px;">
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if next_url %}
+    <input type="hidden" name="next" value="{{ next_url }}">
+    {% endif %}
+
+    <div class="form-group">
+      <label for="name">Nama Produk</label>
+      <input class="form-control" id="name" name="name" value="{{ product.name if product else '' }}" required autofocus>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="category_id">Kategori</label>
+        <select class="form-control" id="category_id" name="category_id" required>
+          {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if product and product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="sku">SKU</label>
+        <input class="form-control" id="sku" name="sku" value="{{ product.sku if product else '' }}" placeholder="Auto jika kosong">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="unit">Satuan</label>
+        <input class="form-control" id="unit" name="unit" value="{{ product.unit if product else 'pcs' }}">
+      </div>
+      <div class="form-group">
+        <label for="low_stock_threshold">Batas Stok Rendah</label>
+        <input class="form-control" type="number" id="low_stock_threshold" name="low_stock_threshold" min="0" value="{{ product.low_stock_threshold if product else 5 }}">
+      </div>
+    </div>
+
+    {% if not product %}
+    <div class="form-group">
+      <label for="stock">Stok Awal</label>
+      <input class="form-control" type="number" id="stock" name="stock" min="0" value="0">
+      <p class="text-muted" style="font-size:0.75rem;margin-top:0.375rem;">Setelah produk dibuat, ubah stok lewat menu Persediaan.</p>
+    </div>
+    {% else %}
+    <div class="form-group">
+      <label>Stok Saat Ini</label>
+      <input class="form-control" value="{{ product.stock }}" disabled>
+      <p class="text-muted" style="font-size:0.75rem;margin-top:0.375rem;">
+        <a href="{{ url_for('inventory.adjust', product_id=product.id) }}">Sesuaikan stok di Persediaan</a>
+      </p>
+    </div>
+    {% endif %}
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="price">Harga Jual (Rp)</label>
+        <input class="form-control" type="number" id="price" name="price" min="0" value="{{ product.price if product else 0 }}">
+      </div>
+      <div class="form-group">
+        <label for="cost">Harga Modal (Rp)</label>
+        <input class="form-control" type="number" id="cost" name="cost" min="0" value="{{ product.cost if product else 0 }}">
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Simpan</button>
+    {% if product %}
+    <button formaction="{{ url_for('products.delete', product_id=product.id) }}" formmethod="post" class="btn btn-secondary" onclick="return confirm('Hapus produk ini?')">Hapus</button>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}

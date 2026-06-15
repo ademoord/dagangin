@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content_public %}
+<div class="login-page">
+  <div class="card login-card">
+    <div class="login-logo">
+      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Dagangin">
+      <h1>Dagangin</h1>
+      <p>POS &amp; ERP untuk UMKM Indonesia</p>
+    </div>
+    {% from 'macros.html' import flash_messages %}
+    {{ flash_messages() }}
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="form-group">
+        <label for="username">Nama Pengguna</label>
+        <input class="form-control" type="text" id="username" name="username" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password">Kata Sandi</label>
+        <input class="form-control" type="password" id="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg">Masuk</button>
+    </form>
+    <p class="text-muted mt-2" style="font-size:0.75rem;text-align:center;">Contoh: admin / dagangin123</p>
+  </div>
+</div>
+{% endblock %}

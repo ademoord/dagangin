@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import status_badge %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Sesuaikan Stok</h1>
+  <a href="{{ url_for('inventory.index') }}" class="btn btn-secondary">Kembali</a>
+</div>
+
+<div class="card card-body" style="max-width:480px;">
+  <div class="mb-2">
+    <div style="font-weight:600;font-size:1.125rem;">{{ product.name }}</div>
+    <div class="text-muted" style="font-size:0.875rem;">{{ product.sku }} · {{ product.unit }}</div>
+    <div class="mt-1">
+      Stok saat ini: <strong>{{ product.stock }}</strong>
+      {{ status_badge(status_label, status_variant) }}
+    </div>
+  </div>
+
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="form-group">
+      <label for="stock">Stok Baru</label>
+      <input class="form-control" type="number" id="stock" name="stock" min="0" value="{{ product.stock }}" required autofocus>
+    </div>
+    <div class="form-group">
+      <label for="notes">Catatan (opsional)</label>
+      <input class="form-control" id="notes" name="notes" placeholder="Misal: stok opname, barang rusak...">
+    </div>
+    <button type="submit" class="btn btn-primary">Simpan Stok</button>
+    <a href="{{ url_for('products.edit', product_id=product.id) }}" class="btn btn-secondary">Ubah Data Produk</a>
+  </form>
+</div>
+{% endblock %}

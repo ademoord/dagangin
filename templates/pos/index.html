@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block page_class %}page-pos{% endblock %}
+
+{% block topbar_search %}
+<form method="get" class="topbar-search hidden-mobile">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  <input type="search" name="q" value="{{ search }}" placeholder="Cari produk, pelanggan...">
+</form>
+{% endblock %}
+
+{% block content %}
+<form method="get" class="hidden-desktop mb-2">
+  <div class="topbar-search" style="max-width:100%;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="search" name="q" value="{{ search }}" placeholder="Cari produk, pelanggan...">
+  </div>
+</form>
+
+<div class="chips mb-2">
+  <a href="{{ url_for('pos.index', q=search) }}" class="chip {% if not active_category %}active{% endif %}">Semua</a>
+  {% for cat in categories %}
+  <a href="{{ url_for('pos.index', category=cat.id, q=search) }}" class="chip {% if active_category == cat.id %}active{% endif %}">{{ cat.name }}</a>
+  {% endfor %}
+</div>
+
+<div class="pos-layout">
+  <div>
+    <div class="product-grid">
+      {% for product in products %}
+      <div class="product-card"
+           data-product-id="{{ product.id }}"
+           hx-post="{{ url_for('pos.cart_add', product_id=product.id) }}"
+           hx-target="#cart-root"
+           hx-swap="innerHTML">
+        <div class="product-icon">🍽</div>
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-price">{{ product.price | rupiah }}</div>
+      </div>
+      {% else %}
+      <div class="empty-state" style="grid-column:1/-1;">Tidak ada produk ditemukan.</div>
+      {% endfor %}
+    </div>
+
+    {% if recent_products %}
+    <div class="recent-items">
+      <h3>Item Terbaru</h3>
+      <div class="recent-scroll">
+        {% for product in recent_products %}
+        <div class="recent-chip"
+             data-product-id="{{ product.id }}"
+             hx-post="{{ url_for('pos.cart_add', product_id=product.id) }}"
+             hx-target="#cart-root"
+             hx-swap="innerHTML">
+          {{ product.name }} · {{ product.price | rupiah }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <div id="cart-root">
+    {% include 'pos/_cart_inner.html' %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/pos.js') }}"></script>
+{% endblock %}

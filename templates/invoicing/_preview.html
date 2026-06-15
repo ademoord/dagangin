@@ -1,0 +1,34 @@
+{% if selected %}
+<div class="card preview-card">
+  <h3>Pratinjau Faktur</h3>
+  <div class="preview-row"><span>No. Faktur</span><strong>{{ selected.invoice_number }}</strong></div>
+  <div class="preview-row"><span>Mitra</span><span>{{ selected.partner.name }}</span></div>
+  <div class="preview-row"><span>Tanggal</span><span>{{ selected.issue_date.strftime('%d/%m/%Y') if selected.issue_date else '-' }}</span></div>
+  <div class="preview-row"><span>Jatuh Tempo</span><span>{{ selected.due_date.strftime('%d/%m/%Y') if selected.due_date else '-' }}</span></div>
+  <hr>
+  {% for line in selected.lines %}
+  <div class="preview-row">
+    <span>{{ line.product.name }} x{{ line.quantity }}</span>
+    <span>{{ line.line_total | rupiah }}</span>
+  </div>
+  {% endfor %}
+  <div class="preview-total">{{ selected.total | rupiah }}</div>
+  <a href="{{ url_for('invoicing.download_pdf', invoice_id=selected.id) }}" class="btn btn-primary btn-block" target="_blank">
+    Cetak / Unduh PDF
+  </a>
+  <form method="post" action="{{ url_for('invoicing.update_status', invoice_id=selected.id) }}" class="mt-1">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="status" value="sent">
+    <button type="submit" class="btn btn-secondary btn-block">Kirim Faktur</button>
+  </form>
+  <form method="post" action="{{ url_for('invoicing.update_status', invoice_id=selected.id) }}" class="mt-1">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="status" value="paid">
+    <button type="submit" class="btn btn-secondary btn-block">Tandai Lunas</button>
+  </form>
+</div>
+{% else %}
+<div class="card preview-card">
+  <div class="empty-state"><p>Pilih faktur untuk pratinjau</p></div>
+</div>
+{% endif %}

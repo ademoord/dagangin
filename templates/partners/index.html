@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import status_badge, render_pagination %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Data Mitra</h1>
+  <a href="{{ url_for('partners.add') }}" class="btn btn-primary">+ Tambah Mitra</a>
+</div>
+
+<p class="text-muted mb-2" style="font-size:0.875rem;">
+  Kelola pelanggan dan vendor dalam satu data mitra.
+</p>
+
+<div class="chips mb-2">
+  {% for key, label in role_filters.items() %}
+  <a href="{{ url_for('partners.index', role=key, q=search) }}" class="chip {% if role == key %}active{% endif %}">{{ label }}</a>
+  {% endfor %}
+</div>
+
+<form method="get" class="mb-2">
+  <input type="hidden" name="role" value="{{ role }}">
+  <div class="topbar-search" style="max-width:100%;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="search" name="q" value="{{ search }}" placeholder="Cari nama, telepon, email...">
+  </div>
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Peran</th>
+          <th>Telepon</th>
+          <th>Email</th>
+          <th>Alamat</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for partner in partners %}
+        <tr>
+          <td>{{ partner.name }}</td>
+          <td>
+            {% if partner.is_customer %}{{ status_badge('Pelanggan', 'success') }}{% endif %}
+            {% if partner.is_supplier %}{{ status_badge('Vendor', 'info') }}{% endif %}
+          </td>
+          <td>{{ partner.phone or '-' }}</td>
+          <td>{{ partner.email or '-' }}</td>
+          <td>{{ partner.address or '-' }}</td>
+          <td>
+            <a href="{{ url_for('partners.edit', partner_id=partner.id) }}" class="btn btn-sm btn-secondary">Ubah</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-muted">Belum ada mitra.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-list">
+    {% for partner in partners %}
+    <div class="product-card-mobile">
+      <div style="flex:1;">
+        <div style="font-weight:600;">{{ partner.name }}</div>
+        <div style="margin-top:0.25rem;">
+          {% if partner.is_customer %}{{ status_badge('Pelanggan', 'success') }}{% endif %}
+          {% if partner.is_supplier %}{{ status_badge('Vendor', 'info') }}{% endif %}
+        </div>
+        <div class="text-muted" style="font-size:0.875rem;margin-top:0.25rem;">{{ partner.phone or '-' }}</div>
+      </div>
+      <a href="{{ url_for('partners.edit', partner_id=partner.id) }}" class="btn btn-sm btn-secondary">Ubah</a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{{ render_pagination(pagination, 'partners.index') }}
+{% endblock %}

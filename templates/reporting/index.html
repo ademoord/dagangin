@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Laporan</h1>
+  <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+    <form method="get" id="period-form">
+      <select name="period" class="form-control" onchange="this.form.submit()" style="width:auto;">
+        <option value="7" {% if period == '7' %}selected{% endif %}>7 hari terakhir</option>
+        <option value="30" {% if period == '30' %}selected{% endif %}>30 hari terakhir</option>
+        <option value="month" {% if period == 'month' %}selected{% endif %}>Bulan ini</option>
+      </select>
+    </form>
+    <a href="{{ url_for('reporting.export_csv', period=period) }}" class="btn btn-secondary">Ekspor CSV</a>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="card kpi-card">
+    <div class="kpi-label">Total Penjualan</div>
+    <div class="kpi-value">{{ kpis.total_sales | rupiah }}</div>
+    <div class="kpi-change {% if kpis.sales_change >= 0 %}up{% else %}down{% endif %}">
+      {% if kpis.sales_change >= 0 %}+{% endif %}{{ kpis.sales_change }}%
+    </div>
+    <div class="kpi-sparkline-wrap"><canvas id="spark-sales"></canvas></div>
+  </div>
+  <div class="card kpi-card">
+    <div class="kpi-label">Laba Kotor</div>
+    <div class="kpi-value">{{ kpis.gross_profit | rupiah }}</div>
+    <div class="kpi-change {% if kpis.profit_change >= 0 %}up{% else %}down{% endif %}">
+      {% if kpis.profit_change >= 0 %}+{% endif %}{{ kpis.profit_change }}%
+    </div>
+    <div class="kpi-sparkline-wrap"><canvas id="spark-profit"></canvas></div>
+  </div>
+  <div class="card kpi-card">
+    <div class="kpi-label">Pesanan</div>
+    <div class="kpi-value">{{ kpis.order_count }}</div>
+    <div class="kpi-change {% if kpis.orders_change >= 0 %}up{% else %}down{% endif %}">
+      {% if kpis.orders_change >= 0 %}+{% endif %}{{ kpis.orders_change }}%
+    </div>
+    <div class="kpi-sparkline-wrap"><canvas id="spark-orders"></canvas></div>
+  </div>
+  <div class="card kpi-card">
+    <div class="kpi-label">Rata-rata Transaksi</div>
+    <div class="kpi-value">{{ kpis.avg_transaction | rupiah }}</div>
+    <div class="kpi-change {% if kpis.avg_change >= 0 %}up{% else %}down{% endif %}">
+      {% if kpis.avg_change >= 0 %}+{% endif %}{{ kpis.avg_change }}%
+    </div>
+    <div class="kpi-sparkline-wrap"><canvas id="spark-avg"></canvas></div>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="card chart-card">
+    <h3 class="chart-title">Penjualan</h3>
+    <div class="chart-container"><canvas id="salesChart"></canvas></div>
+  </div>
+  <div class="card chart-card">
+    <h3 class="chart-title">Pergerakan Stok (Top 5)</h3>
+    <div class="chart-container"><canvas id="stockChart"></canvas></div>
+  </div>
+  <div class="card chart-card hidden-mobile">
+    <h3 class="chart-title">Pembelian per Mitra</h3>
+    <div class="chart-container chart-container-sm"><canvas id="purchaseChart"></canvas></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+  window.DAGANGIN_PERIOD = '{{ period }}';
+</script>
+<script src="{{ url_for('static', filename='js/reporting.js') }}"></script>
+{% endblock %}

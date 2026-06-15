@@ -1,0 +1,92 @@
+/* Dagangin design tokens — normalized desktop + mobile palette */
+:root {
+  --color-green-50: #E9F5F1;
+  --color-green-100: #C7E8ED;
+  --color-green-200: #B7E3F1;
+  --color-green-300: #89C6B8;
+  --color-green-400: #6FC0C6;
+  --color-green-500: #5F9F92;
+  --color-green-600: #3F8081;
+  --color-green-700: #2F645C;
+  --color-green-800: #27454E;
+  --color-green-900: #1D2D1C;
+
+  --color-bg: #F7F7F2;
+  --color-bg-alt: #F7FBF9;
+  --color-surface: #FFFFFF;
+  --color-border: #E0E0E0;
+  --color-border-light: #E6EBEB;
+  --color-muted: #B6B6B5;
+  --color-text: #2D2F2E;
+  --color-text-secondary: #5A5C5B;
+
+  --color-primary: var(--color-green-700);
+  --color-primary-hover: var(--color-green-800);
+  --color-primary-light: var(--color-green-50);
+  --color-accent: var(--color-green-500);
+
+  --color-success: #00C088;
+  --color-warning: #E8A317;
+  --color-danger: #D64545;
+  --color-info: #4A90D9;
+
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px rgba(45, 47, 46, 0.06);
+  --shadow-md: 0 4px 12px rgba(45, 47, 46, 0.08);
+  --shadow-lg: 0 8px 24px rgba(45, 47, 46, 0.12);
+
+  --sidebar-width: 240px;
+  --topbar-height: 64px;
+  --bottom-nav-height: 64px;
+  --cart-width: 320px;
+}
+
+/* Dark mode — 97% black + 8% sage + 5% mint (weighted blend) */
+html[data-theme="dark"] {
+  --color-green-50: rgba(111, 192, 198, 0.08);
+  --color-green-100: rgba(95, 159, 146, 0.14);
+  --color-green-200: rgba(111, 192, 198, 0.18);
+  --color-green-300: #5F9F92;
+  --color-green-400: #6FC0C6;
+  --color-green-500: #89C6B8;
+  --color-green-600: #6FC0C6;
+  --color-green-700: #89C6B8;
+  --color-green-800: #B7E3F1;
+  --color-green-900: #E9F5F1;
+
+  /* rgb(13,22,22) ≈ 97% #000 + 8% sage #5F9F92 + 5% mint #6FC0C6 */
+  --color-bg: #0D1616;
+  --color-bg-alt: #101C1B;
+  --color-surface: #162220;
+  --color-border: rgba(95, 159, 146, 0.22);
+  --color-border-light: rgba(111, 192, 198, 0.12);
+  --color-muted: #6B8480;
+  --color-text: #E8F0EE;
+  --color-text-secondary: #9BB5B0;
+
+  --color-primary: #6FC0C6;
+  --color-primary-hover: #89C6B8;
+  --color-primary-light: rgba(111, 192, 198, 0.12);
+  --color-accent: #89C6B8;
+
+  --color-success: #3DD9A8;
+  --color-warning: #F0C14B;
+  --color-danger: #F08080;
+  --color-info: #7EB8E8;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.55);
+}

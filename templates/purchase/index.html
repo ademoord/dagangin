@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import status_badge, render_pagination %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Daftar Pesanan Pembelian</h1>
+  <a href="{{ url_for('purchase.add') }}" class="btn btn-primary">+ Buat Pesanan</a>
+</div>
+
+<div class="card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>No. Pesanan</th>
+          <th>Mitra (Vendor)</th>
+          <th>Tanggal</th>
+          <th>Total</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in orders %}
+        <tr>
+          <td>{{ row.po.po_number }}</td>
+          <td>{{ row.po.partner.name }}</td>
+          <td>{{ row.po.created_at.strftime('%d/%m/%Y') }}</td>
+          <td>{{ row.po.total | rupiah }}</td>
+          <td>{{ status_badge(row.status_label, row.status_variant) }}</td>
+          <td>
+            {% if row.po.status != 'completed' and row.po.status != 'cancelled' %}
+            <form method="post" action="{{ url_for('purchase.update_status', po_id=row.po.id) }}" style="display:inline;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <select name="status" class="form-control" style="width:auto;display:inline-block;" onchange="this.form.submit()">
+                <option value="sent" {% if row.po.status == 'sent' %}selected{% endif %}>Terkirim</option>
+                <option value="processing" {% if row.po.status == 'processing' %}selected{% endif %}>Diproses</option>
+                <option value="completed" {% if row.po.status == 'completed' %}selected{% endif %}>Selesai</option>
+                <option value="cancelled" {% if row.po.status == 'cancelled' %}selected{% endif %}>Dibatalkan</option>
+              </select>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-muted">Belum ada pesanan pembelian.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card-list">
+    {% for row in orders %}
+    <div class="product-card-mobile">
+      <div style="flex:1;">
+        <div style="font-weight:600;">{{ row.po.po_number }}</div>
+        <div class="text-muted">{{ row.po.partner.name }} · {{ row.po.created_at.strftime('%d/%m/%Y') }}</div>
+        <div style="margin-top:0.25rem;">{{ row.po.total | rupiah }}</div>
+      </div>
+      {{ status_badge(row.status_label, row.status_variant) }}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{{ render_pagination(pagination, 'purchase.index') }}
+{% endblock %}
