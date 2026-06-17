@@ -2,6 +2,8 @@
 
 POS-ERP micro-web app for Indonesian UMKM. Flask-only stack with HTMX, Alpine.js, and Chart.js.
 
+**Database:** SQLite (`data/dagangin.sqlite3`) — local dev and production (PythonAnywhere Free tier).
+
 ## Quick start
 
 ```bash
